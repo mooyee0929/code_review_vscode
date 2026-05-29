@@ -1,0 +1,105 @@
+{
+  "name": "ai-code-review",
+  "displayName": "AI Code Review & Security Check",
+  "description": "LLM-powered code review and security analysis of your git changes, using your Copilot models.",
+  "version": "0.0.1",
+  "publisher": "mooyee",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "AI",
+    "Linters",
+    "Programming Languages"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "aiReview.chat",
+        "name": "aireview",
+        "fullName": "AI Review",
+        "description": "Review changed files and propose inline fixes",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "review",
+            "description": "Review changed files and propose fixes (arg: staged | <branch>)"
+          },
+          {
+            "name": "security",
+            "description": "Security-check changed files and propose fixes (arg: staged | <branch>)"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "aiReview.reviewCode",
+        "title": "Review Code Changes",
+        "category": "AI Review"
+      },
+      {
+        "command": "aiReview.securityCheck",
+        "title": "Security Check Changes",
+        "category": "AI Review"
+      },
+      {
+        "command": "aiReview.generateProjectDocs",
+        "title": "Generate Project Docs (README, Architecture, …)",
+        "category": "AI Review"
+      }
+    ],
+    "configuration": {
+      "title": "AI Code Review",
+      "properties": {
+        "aiReview.backend": {
+          "type": "string",
+          "enum": ["claude-code", "vscode-lm"],
+          "enumDescriptions": [
+            "Use the Claude Code CLI (claude -p). Needs Claude Code installed and signed in; no Copilot quota used.",
+            "Use the VSCode Language Model API (GitHub Copilot models)."
+          ],
+          "default": "claude-code",
+          "description": "Model backend for review, security, and docs. Switch to vscode-lm to use Copilot."
+        },
+        "aiReview.claudeCodePath": {
+          "type": "string",
+          "default": "claude",
+          "description": "Path to the Claude Code CLI executable (used when backend is claude-code)."
+        },
+        "aiReview.claudeCodeModel": {
+          "type": "string",
+          "default": "",
+          "description": "Model passed to the Claude Code CLI as --model. Leave empty for the CLI default."
+        },
+        "aiReview.modelFamily": {
+          "type": "string",
+          "default": "",
+          "description": "Preferred Copilot model family (e.g. gpt-4o, claude-3.5-sonnet), used when backend is vscode-lm. Leave empty to auto-select."
+        },
+        "aiReview.maxInputChars": {
+          "type": "number",
+          "default": 100000,
+          "description": "Maximum number of diff or code characters sent to the model. Larger inputs are truncated to stay within context limits."
+        },
+        "aiReview.reviewPersona": {
+          "type": "string",
+          "default": "senior-engineer",
+          "description": "Default reviewer standard for code review and security check. Use a preset key (senior-engineer, coding-agent, pragmatic, strict) or type a custom standard sentence. You can still change it per run."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test:unit": "npm run compile && node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.4.0"
+  }
+}
